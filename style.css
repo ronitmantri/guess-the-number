@@ -1,0 +1,21 @@
+:root{--bg:#0f1724;--card:#0b1220;--accent:#3b82f6;--muted:#94a3b8;--text:#e6eef8}
+*{box-sizing:border-box;font-family:Inter,ui-sans-serif,system-ui,Segoe UI,Roboto,"Helvetica Neue",Arial}
+html,body,#root{height:100%}
+body{margin:0;background:linear-gradient(180deg,var(--bg),#071022);color:var(--text);display:flex;align-items:center;justify-content:center;padding:24px}
+.container{width:100%;max-width:760px;background:var(--card);border-radius:12px;padding:20px;box-shadow:0 6px 30px rgba(2,6,23,.6)}
+h1{margin:0 0 12px;font-size:1.6rem}
+.controls{display:flex;gap:10px;align-items:center;margin-bottom:10px}
+select,input,button{padding:8px 10px;border-radius:8px;border:1px solid rgba(255,255,255,.06);background:transparent;color:var(--text)}
+button{cursor:pointer}
+.hidden{display:none}
+.status-row{display:flex;gap:18px;margin-bottom:10px}
+.hint{padding:12px;border-radius:8px;background:rgba(255,255,255,.02);margin-bottom:10px}
+.guess-row{display:flex;gap:8px}
+.guesses{margin-top:10px;font-size:0.95rem;color:var(--muted)}
+.modal{position:fixed;left:0;right:0;top:0;bottom:0;display:flex;align-items:center;justify-content:center;background:rgba(2,6,23,.6)}
+.modal-inner{background:var(--card);padding:18px;border-radius:10px;max-width:420px;width:92%}
+.modal-actions{display:flex;gap:8px;margin-top:10px}
+.leaderboard{margin-top:18px}
+.leaderboard-list{display:grid;grid-template-columns:1fr 80px 60px;gap:6px;padding:6px;background:rgba(255,255,255,.02);border-radius:8px}
+.leaderboard-list .row{padding:8px;border-bottom:1px solid rgba(255,255,255,.02)}
+.note{font-size:0.8rem;color:var(--muted);margin-top:8px}

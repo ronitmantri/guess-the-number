@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Guess The Number</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div class="container">
+      <h1>Guess The Number</h1>
+
+      <div class="controls">
+        <label for="difficulty">Difficulty</label>
+        <select id="difficulty">
+          <option value="easy">Easy (1-10)</option>
+          <option value="medium">Medium (1-50)</option>
+          <option value="hard">Hard (1-100)</option>
+          <option value="insane">Insane (1-1000)</option>
+        </select>
+        <button id="startBtn">Start Game</button>
+      </div>
+
+      <div id="game" class="hidden">
+        <div class="status-row">
+          <div>Time: <span id="time">0.0</span>s</div>
+          <div>Guesses: <span id="guessCount">0</span></div>
+        </div>
+
+        <div class="hint" id="hint">Pick a difficulty and start.</div>
+
+        <div class="guess-row">
+          <input id="guessInput" type="number" placeholder="Enter your guess" />
+          <button id="guessBtn">Guess</button>
+        </div>
+
+        <div id="guessesList" class="guesses"></div>
+      </div>
+
+      <div id="win" class="modal hidden">
+        <div class="modal-inner">
+          <h2>Level Cleared!</h2>
+          <p id="winSummary"></p>
+          <label>Your name: <input id="playerName" maxlength="32" /></label>
+          <div class="modal-actions">
+            <button id="submitScoreBtn">Prepare Submit</button>
+            <button id="playAgain">Play Again</button>
+          </div>
+          <p class="note">To publish to the world leaderboard, use the included `submit_score.js` script (instructions in README).</p>
+        </div>
+      </div>
+
+      <section class="leaderboard">
+        <h2>World Leaderboard</h2>
+        <div id="leaderboardContainer">Loading leaderboard...</div>
+      </section>
+
+    </div>
+
+    <script src="app.js"></script>
+  </body>
+</html>
