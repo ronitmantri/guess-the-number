@@ -33,60 +33,24 @@
         --accent: #ff00c8;
     }
 
-    .screen {
-        display: none;
-        padding: 20px;
-        animation: fade 0.4s ease;
-    }
+    .screen { display: none; padding: 20px; animation: fade 0.4s ease; }
     @keyframes fade { from { opacity: 0; } to { opacity: 1; } }
-
     .active { display: block; }
 
-    .card {
-        background: var(--card);
-        padding: 20px;
-        border-radius: 14px;
-        max-width: 400px;
-        margin: auto;
-        box-shadow: 0 0 12px #0004;
-    }
+    .card { background: var(--card); padding: 20px; border-radius: 14px; max-width: 400px; margin: auto; box-shadow: 0 0 12px #0004; }
 
-    button {
-        background: var(--accent);
-        border: none;
-        padding: 14px 20px;
-        border-radius: 10px;
-        cursor: pointer;
-        width: 100%;
-        font-size: 18px;
-        margin-top: 10px;
-        color: black;
-        font-weight: bold;
-        transition: 0.2s;
-    }
+    button { background: var(--accent); border: none; padding: 14px 20px; border-radius: 10px; cursor: pointer; width: 100%; font-size: 18px; margin-top: 10px; color: black; font-weight: bold; transition: 0.2s; }
     button:hover { transform: scale(1.05); }
 
-    footer {
-        position: fixed;
-        bottom: 0;
-        width: 100%;
-        text-align: center;
-        padding: 8px;
-        background: #0004;
-    }
+    footer { position: fixed; bottom: 0; width: 100%; text-align: center; padding: 8px; background: #0004; }
 
-    .numpad {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        gap: 10px;
-        margin-top: 15px;
-    }
+    .numpad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 15px; }
+    .numpad button { padding: 20px; font-size: 20px; border-radius: 14px; }
 
-    .numpad button {
-        padding: 20px;
-        font-size: 20px;
-        border-radius: 14px;
-    }
+    #bigHint { font-size: 22px; font-weight: bold; text-align: center; margin-bottom: 12px; min-height: 28px; }
+
+    .confetti-piece{position:fixed;top:-10px;width:12px;height:12px;opacity:0.9;animation:fall 1s linear forwards;border-radius:3px;}
+    @keyframes fall{to{transform:translateY(120vh) rotate(720deg);opacity:0;}}
 
 </style>
 </head>
@@ -97,17 +61,26 @@
     <div class="card">
         <h2>🎮 Guess Master</h2>
 
-        <label>Difficulty (1–100):</label>
-        <input id="difficulty" type="number" min="1" max="100" value="50" style="width:100%;padding:10px;border-radius:10px;margin-top:10px;">
+        <label>Difficulty Mode:</label>
+        <select id="difficultyMode" style="width:100%;padding:10px;border-radius:10px;margin-top:10px;">
+            <option value="easy">Easy (1-50)</option>
+            <option value="normal">Normal (1-100)</option>
+            <option value="hard">Hard (1-250)</option>
+            <option value="extreme">Extreme (1-500)</option>
+        </select>
 
         <label style="display:block;margin-top:15px;">Theme:</label>
         <select id="theme" style="width:100%;padding:10px;border-radius:10px;">
             <option value="dark">Dark</option>
             <option value="light">Light</option>
             <option value="neon">Neon</option>
+            <!-- unlocked themes appear dynamically -->
         </select>
 
+        <div style="margin-top:15px; font-size:16px;">Coins: <span id="coinDisplay">0</span></div>
+
         <button onclick="startGame()">Start Game</button>
+        <button onclick="showAchievements()">Achievements</button>
     </div>
 </div>
 
@@ -115,23 +88,13 @@
 <div id="game" class="screen">
     <div class="card">
         <h2>🔢 Make Your Guess</h2>
-        <p id="hint">Enter a number:</p>
-
+        <div id="bigHint"></div>
         <input id="guess" type="text" readonly style="width:100%;padding:12px;border-radius:10px;font-size:20px;text-align:center;">
-
         <div class="numpad">
-            <button onclick="addNum('1')">1</button>
-            <button onclick="addNum('2')">2</button>
-            <button onclick="addNum('3')">3</button>
-            <button onclick="addNum('4')">4</button>
-            <button onclick="addNum('5')">5</button>
-            <button onclick="addNum('6')">6</button>
-            <button onclick="addNum('7')">7</button>
-            <button onclick="addNum('8')">8</button>
-            <button onclick="addNum('9')">9</button>
-            <button onclick="clearNum()">⌫</button>
-            <button onclick="addNum('0')">0</button>
-            <button onclick="submitGuess()">OK</button>
+            <button onclick="addNum('1')">1</button><button onclick="addNum('2')">2</button><button onclick="addNum('3')">3</button>
+            <button onclick="addNum('4')">4</button><button onclick="addNum('5')">5</button><button onclick="addNum('6')">6</button>
+            <button onclick="addNum('7')">7</button><button onclick="addNum('8')">8</button><button onclick="addNum('9')">9</button>
+            <button onclick="clearNum()">⌫</button><button onclick="addNum('0')">0</button><button onclick="submitGuess()">OK</button>
         </div>
     </div>
 </div>
@@ -145,67 +108,106 @@
     </div>
 </div>
 
-<footer>Made with 🔥 by Ronit</footer>
+<!-- ACHIEVEMENTS SCREEN -->
+<div id="achievementsScreen" class="screen">
+    <div class="card">
+        <h2>🏆 Achievements</h2>
+        <ul id="achList" style="text-align:left;"></ul>
+        <button onclick="switchScreen('menu')">Back</button>
+    </div>
+</div>
+
+<footer>Made with 🔥 by Ronit • Coins unlock themes & modes</footer>
 
 <script>
 let secret = 0;
 let attempts = 0;
 let max = 50;
+let mode = 'normal';
+let coins = parseInt(localStorage.getItem('coins')||0);
 
-function switchScreen(id) {
-    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-    document.getElementById(id).classList.add('active');
+let highscores = JSON.parse(localStorage.getItem('guessHighscores')||'{}');
+let achievements = JSON.parse(localStorage.getItem('achievements')||'{}');
+
+const achievementList = [
+    {name:'One Shot Wonder',desc:'Guess in 1 attempt',coins:50,check:()=>attempts===1},
+    {name:'Speed Demon',desc:'3 or fewer attempts',coins:30,check:()=>attempts<=3},
+    {name:'Extreme Master',desc:'Beat Extreme ≤10 attempts',coins:100,check:()=>mode==='extreme'&&attempts<=10},
+    {name:'Lucky 7',desc:'Guess number 7',coins:10,check:()=>secret===7},
+    {name:'High Roller',desc:'Hard mode ≤15',coins:40,check:()=>mode==='hard'&&attempts<=15},
+    {name:'Night Owl',desc:'Play Dark theme',coins:10,check:()=>document.getElementById('theme').value==='dark'},
+    {name:'Lightbringer',desc:'Play Light theme',coins:10,check:()=>document.getElementById('theme').value==='light'},
+    {name:'Neon Spark',desc:'Play Neon theme',coins:20,check:()=>document.getElementById('theme').value==='neon'},
+    {name:'First Victory',desc:'Win first game',coins:20,check:()=>attempts>=1},
+    {name:'Persistent',desc:'Play 5 games',coins:50,check:()=>parseInt(localStorage.getItem('gamesPlayed')||0)>=5}
+];
+
+function saveAchievements(){
+    localStorage.setItem('achievements',JSON.stringify(achievements));
+    document.getElementById('coinDisplay').innerText=coins;
 }
 
-function startGame() {
-    max = parseInt(document.getElementById("difficulty").value);
-    if (max < 1 || max > 100) { alert("Difficulty must be 1–100"); return; }
-
-    attempts = 0;
-    secret = Math.floor(Math.random() * max) + 1;
-
-    document.documentElement.className =
-        document.getElementById("theme").value === "light" ? "theme-light" :
-        document.getElementById("theme").value === "neon" ? "theme-neon" : "";
-
-    document.getElementById("guess").value = "";
-    document.getElementById("hint").innerText = "Enter a number:";
-    switchScreen("game");
-}
-
-function addNum(n) {
-    let g = document.getElementById("guess");
-    if (g.value.length < 3) g.value += n;
-}
-
-function clearNum() {
-    let g = document.getElementById("guess");
-    g.value = g.value.slice(0, -1);
-}
-
-function submitGuess() {
-    let val = parseInt(document.getElementById("guess").value);
-    if (isNaN(val)) return;
-
-    attempts++;
-
-    if (val === secret) {
-        document.getElementById("stats").innerText =
-            `Correct number: ${secret}\nAttempts: ${attempts}`;
-        switchScreen("win");
-    } else if (val < secret) {
-        document.getElementById("hint").innerText = "📈 Higher!";
-    } else {
-        document.getElementById("hint").innerText = "📉 Lower!";
+function unlock(name){
+    if(!achievements[name]){
+        achievements[name]=true;
+        coins+=achievementList.find(a=>a.name===name)?.coins||0;
+        saveAchievements();
     }
-
-    document.getElementById("guess").value = "";
 }
 
-function returnMenu() {
-    switchScreen("menu");
+function showAchievements(){
+    switchScreen('achievementsScreen');
+    const list = document.getElementById('achList');
+    list.innerHTML='';
+    achievementList.forEach(a=>{
+        const li = document.createElement('li');
+        li.innerText = `${a.name} (${a.coins} coins) - ${a.desc} ${achievements[a.name]?'✅':''}`;
+        list.appendChild(li);
+    });
 }
+
+function switchScreen(id){
+    document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    if(id==='win'){ confetti(); checkAchievements(); }
+}
+
+function startGame(){
+    mode = document.getElementById('difficultyMode').value;
+    max = mode==='easy'?50:mode==='normal'?100:mode==='hard'?250:500;
+    attempts=0;
+    secret=Math.floor(Math.random()*max)+1;
+    document.documentElement.className=document.getElementById('theme').value==='light'?'theme-light':document.getElementById('theme').value==='neon'?'theme-neon':'';
+    document.getElementById('guess').value='';
+    document.getElementById('bigHint').innerText='';
+    localStorage.setItem('gamesPlayed',parseInt(localStorage.getItem('gamesPlayed')||0)+1);
+    switchScreen('game');
+}
+
+function addNum(n){ let g=document.getElementById('guess'); if(g.value.length>=3) return; g.value+=n; }
+function clearNum(){ let g=document.getElementById('guess'); g.value=g.value.slice(0,-1); }
+function shake(){ const card=document.querySelector('#game .card'); card.classList.add('shake'); setTimeout(()=>card.classList.remove('shake'),500); }
+function submitGuess(){
+    let val=parseInt(document.getElementById('guess').value);
+    if(isNaN(val)) return;
+    attempts++;
+    if(val===secret){
+        highscores[mode]=!highscores[mode]?attempts:Math.min(highscores[mode],attempts);
+        localStorage.setItem('guessHighscores',JSON.stringify(highscores));
+        document.getElementById('stats').innerText=`Correct: ${secret}\nAttempts: ${attempts}\nBest (${mode}): ${highscores[mode]}\nCoins: ${coins}`;
+        switchScreen('win');
+        return;
+    }
+    document.getElementById('bigHint').innerText=val<secret?'📈 Higher!':'📉 Lower!';
+    shake();
+    document.getElementById('guess').value='';
+}
+
+function confetti(){ const duration=1500,end=Date.now()+duration;(function frame(){confettiParticles(); if(Date.now()<end) requestAnimationFrame(frame);})(); }
+function confettiParticles(){ for(let i=0;i<10;i++){ const div=document.createElement('div'); div.className='confetti-piece'; div.style.left=Math.random()*100+'%'; div.style.background=`hsl(${Math.random()*360},100%,50%)`; document.body.appendChild(div); setTimeout(()=>div.remove(),1000); } }
+
+function checkAchievements(){ achievementList.forEach(a=>{if(a.check()){unlock(a.name);}}); }
+function returnMenu(){ switchScreen('menu'); }
 </script>
-
 </body>
 </html>
