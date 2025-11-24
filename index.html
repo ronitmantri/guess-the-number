@@ -4,7 +4,27 @@
 <meta charset="UTF-8">
 <title>Guess Master Pro</title>
 <style>
-/* General styles */
+:root {
+    --bg: #0d0d0d;
+    --text: #fff;
+    --card: #1a1a1a;
+    --accent: #00e0ff;
+    --button-text: #fff;
+}
+.theme-light {
+    --bg: #f5f5f5;
+    --text: #111;
+    --card: #fff;
+    --accent: #0077ff;
+    --button-text: #111;
+}
+.theme-neon {
+    --bg: #0a0a0a;
+    --text: #39ff14;
+    --card: #111;
+    --accent: #ff00c8;
+    --button-text: #fff;
+}
 body {
     margin: 0;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -12,99 +32,46 @@ body {
     color: var(--text);
     transition: 0.3s;
 }
-:root {
-    --bg: #111;
-    --text: #fff;
-    --card: #222;
-    --accent: #00d4ff;
-    --button-text: #000;
-}
-.theme-light {
-    --bg: #f2f2f2;
-    --text: #111;
-    --card: #fff;
-    --accent: #0077ff;
-    --button-text: #fff;
-}
-.theme-neon {
-    --bg: #000;
-    --text: #39ff14;
-    --card: #111;
-    --accent: #ff00c8;
-    --button-text: #fff;
-}
-.screen {
-    display: none;
-    padding: 20px;
-    animation: fade 0.4s ease;
-}
-@keyframes fade { from {opacity:0;} to{opacity:1;} }
+.screen { display: none; padding: 20px; animation: fade 0.4s ease; }
 .active { display: block; }
-.card {
-    background: var(--card);
-    padding: 30px;
-    border-radius: 20px;
-    max-width: 500px;
-    margin: 30px auto;
-    box-shadow: 0 0 20px #0008;
-    text-align: center;
-}
-button {
-    background: var(--accent);
-    border: none;
-    padding: 15px 25px;
-    border-radius: 12px;
-    cursor: pointer;
-    font-size: 18px;
-    margin: 10px 0;
-    font-weight: bold;
-    color: var(--button-text);
-    transition: 0.2s;
-}
+@keyframes fade { from {opacity:0;} to{opacity:1;} }
+.card { background: var(--card); padding: 30px; border-radius: 20px; max-width: 600px; margin: 30px auto; box-shadow: 0 0 30px #0008; text-align: center; }
+button { background: var(--accent); border: none; padding: 15px 25px; border-radius: 14px; cursor: pointer; font-size: 18px; margin: 10px 5px; font-weight: bold; color: var(--button-text); transition: 0.2s; }
 button:hover { transform: scale(1.05); }
-footer {
-    position: fixed;
-    bottom: 0;
-    width: 100%;
-    text-align: center;
-    padding: 10px;
-    background: #0004;
-    font-size: 14px;
-}
-.numpad {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 12px;
-    margin-top: 15px;
-}
+footer { position: fixed; bottom: 0; width: 100%; text-align: center; padding: 12px; background: #000a; font-size: 14px; }
+.numpad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-top: 15px; }
 .numpad button { padding: 25px; font-size: 22px; border-radius: 14px; }
-#bigHint { font-size: 24px; font-weight: bold; margin-bottom: 12px; min-height: 30px; }
-.confetti-piece{position:fixed;top:-10px;width:14px;height:14px;opacity:0.9;animation:fall 1s linear forwards;border-radius:4px;}
+#bigHint { font-size: 26px; font-weight: bold; margin-bottom: 12px; min-height: 35px; color: var(--accent); }
+.confetti-piece{position:fixed;top:-10px;width:16px;height:16px;opacity:0.9;animation:fall 1s linear forwards;border-radius:4px;}
 @keyframes fall{to{transform:translateY(120vh) rotate(720deg);opacity:0;}}
-.achievement-card{background: var(--card); padding: 15px; border-radius:12px; margin:10px 0; text-align:left; box-shadow:0 0 10px #0004;}
-.shop-card{background: var(--card); padding: 15px; border-radius:12px; margin:10px 0; text-align:left; box-shadow:0 0 10px #0004;}
+.coins-tab {position:fixed; top:15px; right:15px; background:var(--accent); padding:12px 18px; border-radius:14px; cursor:pointer; font-weight:bold; color:var(--button-text); z-index:999;}
+.coins-tab:hover {background: #ffdd00; color: #000;}
+.achievement-square {display:inline-block; width:160px; height:160px; background:var(--card); margin:10px; border-radius:16px; box-shadow:0 0 12px #0004; padding:10px; text-align:center; cursor:pointer; transition:0.25s;}
+.achievement-square:hover {transform:scale(1.08); background: var(--accent);}
+.achievement-details {font-size:14px; color:#ddd; margin-top:5px;}
+.shop-item {display:flex; justify-content:space-between; align-items:center; background:var(--card); padding:18px; margin:10px 0; border-radius:14px; box-shadow:0 0 12px #0004;}
 </style>
 </head>
 <body>
+<div class="coins-tab" id="coinTab">Coins: <span id="coinDisplay">0</span></div>
 
 <!-- MAIN MENU -->
 <div id="menu" class="screen active">
 <div class="card">
 <h1>🎮 Guess Master Pro</h1>
 <label>Difficulty Mode:</label>
-<select id="difficultyMode" style="width:100%; padding:10px; border-radius:12px; margin-top:10px;">
+<select id="difficultyMode" style="width:100%; padding:12px; border-radius:14px; margin-top:10px;">
 <option value="easy">Easy (1-50)</option>
 <option value="normal">Normal (1-100)</option>
 <option value="hard">Hard (1-250)</option>
 <option value="extreme">Extreme (1-500)</option>
 </select>
 <label style="display:block; margin-top:15px;">Theme:</label>
-<select id="theme" style="width:100%; padding:10px; border-radius:12px;">
+<select id="theme" style="width:100%; padding:12px; border-radius:14px;">
 <option value="dark">Dark</option>
 <option value="light">Light</option>
 <option value="neon">Neon</option>
 </select>
-<div style="margin-top:15px; font-size:16px;">Coins: <span id="coinDisplay">0</span></div>
 <button onclick="startGame()">Start Game</button>
 <button onclick="switchScreen('achievementsScreen')">Achievements</button>
 <button onclick="switchScreen('shopScreen')">Shop</button>
@@ -116,7 +83,7 @@ footer {
 <div class="card">
 <h2>🔢 Make Your Guess</h2>
 <div id="bigHint"></div>
-<input id="guess" type="text" readonly style="width:100%;padding:12px;border-radius:10px;font-size:20px;text-align:center;">
+<input id="guess" type="text" readonly style="width:100%;padding:14px;border-radius:12px;font-size:22px;text-align:center;">
 <div class="numpad">
 <button onclick="addNum('1')">1</button><button onclick="addNum('2')">2</button><button onclick="addNum('3')">3</button>
 <button onclick="addNum('4')">4</button><button onclick="addNum('5')">5</button><button onclick="addNum('6')">6</button>
@@ -153,51 +120,45 @@ footer {
 </div>
 </div>
 
-<footer>Made with 🔥 by Ronit • <a href="https://ronitmantri.github.io/guess-the-number/" target="_blank" style="color:var(--accent);text-decoration:none;">Play Online</a></footer>
+<footer>Made by Ronit • <a href="https://github.com/ronitmantri" target="_blank" style="color:var(--accent); text-decoration:none;">GitHub Main</a> | <a href="https://github.com/ronitmantri-alt" target="_blank" style="color:var(--accent); text-decoration:none;">GitHub Alt</a></footer>
 
 <script>
-// GAME VARIABLES
-let secret = 0, attempts = 0, max = 50, mode='normal';
-let coins = parseInt(localStorage.getItem('coins')||0);
-let highscores = JSON.parse(localStorage.getItem('guessHighscores')||'{}');
-let achievements = JSON.parse(localStorage.getItem('achievements')||'{}');
-
-// ACHIEVEMENTS CONFIG
-const achievementList = [
-{name:'One Shot Wonder',desc:'Guess in 1 attempt',coins:50,check:()=>attempts===1},
-{name:'Speed Demon',desc:'Guess ≤3 attempts',coins:30,check:()=>attempts<=3},
-{name:'Extreme Master',desc:'Beat Extreme ≤10 attempts',coins:100,check:()=>mode==='extreme'&&attempts<=10},
-{name:'Lucky 7',desc:'Secret number is 7',coins:10,check:()=>secret===7},
-{name:'High Roller',desc:'Hard mode ≤15',coins:40,check:()=>mode==='hard'&&attempts<=15},
-{name:'Night Owl',desc:'Play Dark theme',coins:10,check:()=>document.getElementById('theme').value==='dark'},
-{name:'Lightbringer',desc:'Play Light theme',coins:10,check:()=>document.getElementById('theme').value==='light'},
-{name:'Neon Spark',desc:'Play Neon theme',coins:20,check:()=>document.getElementById('theme').value==='neon'},
-{name:'First Victory',desc:'Win first game',coins:20,check:()=>attempts>=1},
-{name:'Persistent',desc:'Play 5 games',coins:50,check:()=>parseInt(localStorage.getItem('gamesPlayed')||0)>=5}
+let secret=0, attempts=0, max=50, mode='normal';
+let coins=parseInt(localStorage.getItem('coins')||0);
+let highscores=JSON.parse(localStorage.getItem('guessHighscores')||'{}');
+let achievements=JSON.parse(localStorage.getItem('achievements')||'{}');
+const achievementList=[
+{name:'One Shot Wonder',desc:'Guess in 1 attempt',coins:50,icon:'🎯',check:()=>attempts===1},
+{name:'Speed Demon',desc:'≤3 attempts',coins:30,icon:'🚀',check:()=>attempts<=3},
+{name:'Extreme Master',desc:'Extreme ≤10 attempts',coins:100,icon:'💀',check:()=>mode==='extreme'&&attempts<=10},
+{name:'Lucky 7',desc:'Secret number is 7',coins:10,icon:'7️⃣',check:()=>secret===7},
+{name:'High Roller',desc:'Hard ≤15',coins:40,icon:'🎲',check:()=>mode==='hard'&&attempts<=15},
+{name:'Night Owl',desc:'Play Dark theme',coins:10,icon:'🦉',check:()=>document.getElementById('theme').value==='dark'},
+{name:'Lightbringer',desc:'Play Light theme',coins:10,icon:'🌞',check:()=>document.getElementById('theme').value==='light'},
+{name:'Neon Spark',desc:'Play Neon theme',coins:20,icon:'✨',check:()=>document.getElementById('theme').value==='neon'},
+{name:'First Victory',desc:'Win first game',coins:20,icon:'🥇',check:()=>attempts>=1},
+{name:'Persistent',desc:'Play 5 games',coins:50,icon:'🏋️‍♂️',check:()=>parseInt(localStorage.getItem('gamesPlayed')||0)>=5}
 ];
-
-// SHOP CONFIG
 const shopItems=[
-{name:'Golden Theme',cost:100,action:()=>{alert('Golden Theme Unlocked!');}},
-{name:'Ultra Mode',cost:150,action:()=>{alert('Ultra Mode Unlocked!');}}
+{name:'Golden Theme',cost:100,action:()=>alert('Golden Theme Unlocked!')},
+{name:'Ultra Mode',cost:150,action:()=>alert('Ultra Mode Unlocked!')},
+{name:'Confetti Max',cost:80,action:()=>alert('Confetti Intensity Max!')},
+{name:'Secret Icon',cost:50,action:()=>alert('Secret Icon Unlocked!')}
 ];
-
-function saveAchievements(){ localStorage.setItem('achievements',JSON.stringify(achievements)); localStorage.setItem('coins',coins); document.getElementById('coinDisplay').innerText=coins;}
+function saveAchievements(){localStorage.setItem('achievements',JSON.stringify(achievements)); localStorage.setItem('coins',coins); document.getElementById('coinDisplay').innerText=coins;}
 function unlock(name){if(!achievements[name]){achievements[name]=true; coins+=achievementList.find(a=>a.name===name)?.coins||0; saveAchievements();}}
 function checkAchievements(){achievementList.forEach(a=>{if(a.check()){unlock(a.name);}});}
-function switchScreen(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');if(id==='win'){confetti();checkAchievements();}if(id==='achievementsScreen'){renderAchievements();}if(id==='shopScreen'){renderShop();}}
-function renderAchievements(){const list=document.getElementById('achList');list.innerHTML='';achievementList.forEach(a=>{const div=document.createElement('div');div.className='achievement-card';div.innerText=`${a.name} (${a.coins} coins) - ${a.desc} ${achievements[a.name]?'✅':'❌'}`;list.appendChild(div);});}
-function renderShop(){const list=document.getElementById('shopList');list.innerHTML='';shopItems.forEach(i=>{const div=document.createElement('div');div.className='shop-card';const btn=document.createElement('button');btn.innerText=`Buy ${i.name} (${i.cost} coins)`;btn.onclick=()=>{if(coins>=i.cost){coins-=i.cost;i.action();saveAchievements();renderShop();}else{alert('Not enough coins!');}};div.appendChild(btn);list.appendChild(div);});}
-
-function startGame(){mode=document.getElementById('difficultyMode').value;max=mode==='easy'?50:mode==='normal'?100:mode==='hard'?250:500;attempts=0;secret=Math.floor(Math.random()*max)+1;document.documentElement.className=document.getElementById('theme').value==='light'?'theme-light':document.getElementById('theme').value==='neon'?'theme-neon':'';document.getElementById('guess').value='';document.getElementById('bigHint').innerText='';localStorage.setItem('gamesPlayed',parseInt(localStorage.getItem('gamesPlayed')||0)+1);switchScreen('game');}
-function addNum(n){let g=document.getElementById('guess');if(g.value.length>=3)return;g.value+=n;}
-function clearNum(){let g=document.getElementById('guess');g.value=g.value.slice(0,-1);}
-function shake(){const card=document.querySelector('#game .card');card.classList.add('shake');setTimeout(()=>card.classList.remove('shake'),500);}
-function submitGuess(){let val=parseInt(document.getElementById('guess').value);if(isNaN(val))return;attempts++;if(val===secret){highscores[mode]=!highscores[mode]?attempts:Math.min(highscores[mode],attempts);localStorage.setItem('guessHighscores',JSON.stringify(highscores));document.getElementById('stats').innerText=`Correct: ${secret}\nAttempts: ${attempts}\nBest (${mode}): ${highscores[mode]}\nCoins: ${coins}`;switchScreen('win');return;}document.getElementById('bigHint').innerText=val<secret?'📈 Higher!':'📉 Lower!';shake();document.getElementById('guess').value='';}
-function confetti(){const duration=1500,end=Date.now()+duration;(function frame(){confettiParticles();if(Date.now()<end)requestAnimationFrame(frame);})();}
-function confettiParticles(){for(let i=0;i<10;i++){const div=document.createElement('div');div.className='confetti-piece';div.style.left=Math.random()*100+'%';div.style.background=`hsl(${Math.random()*360},100%,50%)`;document.body.appendChild(div);setTimeout(()=>div.remove(),1000);}}
+function switchScreen(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active')); document.getElementById(id).classList.add('active'); if(id==='win'){confetti(); checkAchievements();} if(id==='achievementsScreen'){renderAchievements();} if(id==='shopScreen'){renderShop();}}
+function renderAchievements(){const list=document.getElementById('achList'); list.innerHTML=''; achievementList.forEach(a=>{const div=document.createElement('div'); div.className='achievement-square'; div.innerHTML=`<div style='font-size:28px;'>${a.icon}</div><div>${a.name}</div><div class='achievement-details'>${a.desc}<br>Coins: ${a.coins}</div>`; list.appendChild(div);});}
+function renderShop(){const list=document.getElementById('shopList'); list.innerHTML=''; shopItems.forEach(i=>{const div=document.createElement('div'); div.className='shop-item'; const btn=document.createElement('button'); btn.innerText=`Buy (${i.cost})`; btn.onclick=()=>{if(coins>=i.cost){coins-=i.cost;i.action(); saveAchievements(); renderShop();} else {alert('Not enough coins!');}}; div.innerHTML=`<span>${i.name}</span>`; div.appendChild(btn); list.appendChild(div);});}
+function startGame(){mode=document.getElementById('difficultyMode').value; max=mode==='easy'?50:mode==='normal'?100:mode==='hard'?250:500; attempts=0; secret=Math.floor(Math.random()*max)+1; document.documentElement.className=document.getElementById('theme').value==='light'?'theme-light':document.getElementById('theme').value==='neon'?'theme-neon':''; document.getElementById('guess').value=''; document.getElementById('bigHint').innerText=''; localStorage.setItem('gamesPlayed',parseInt(localStorage.getItem('gamesPlayed')||0)+1); switchScreen('game');}
+function addNum(n){let g=document.getElementById('guess'); if(g.value.length>=Math.max(3,String(max).length))return; g.value+=n;}
+function clearNum(){let g=document.getElementById('guess'); g.value=g.value.slice(0,-1);}
+function shake(){const card=document.querySelector('#game .card'); card.classList.add('shake'); setTimeout(()=>card.classList.remove('shake'),500);}
+function submitGuess(){let val=parseInt(document.getElementById('guess').value); if(isNaN(val))return; attempts++; if(val===secret){highscores[mode]=!highscores[mode]?attempts:Math.min(highscores[mode],attempts); localStorage.setItem('guessHighscores',JSON.stringify(highscores)); document.getElementById('stats').innerText=`Correct: ${secret}\nAttempts: ${attempts}\nBest (${mode}): ${highscores[mode]}\nCoins: ${coins}`; switchScreen('win'); return;} document.getElementById('bigHint').innerText=val<secret?'📈 Higher!':'📉 Lower!'; shake(); document.getElementById('guess').value='';}
+function confetti(){const duration=1500,end=Date.now()+duration;(function frame(){confettiParticles(); if(Date.now()<end)requestAnimationFrame(frame);})();}
+function confettiParticles(){for(let i=0;i<12;i++){const div=document.createElement('div'); div.className='confetti-piece'; div.style.left=Math.random()*100+'%'; div.style.background=`hsl(${Math.random()*360},100%,50%)`; document.body.appendChild(div); setTimeout(()=>div.remove(),1000);}}
 function returnMenu(){switchScreen('menu');}
-
 </script>
 </body>
 </html>
