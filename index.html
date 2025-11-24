@@ -12,32 +12,29 @@
       --accent: #4caf50;
       --glow: 0 0 15px rgba(76, 175, 80, 0.5);
     }
-    body.light {
-      --bg: #f2f2f2;
-      --card: #ffffff;
-      --text: #1a1a1a;
-      --accent: #007bff;
-      --glow: 0 0 15px rgba(0,123,255,0.4);
-    }
-    body.neon {
-      --bg: #000000;
-      --card: #0d0d0d;
-      --text: #39ff14;
-      --accent: #ff00ff;
-      --glow: 0 0 20px #ff00ff;
-    }
 
     body {
-      font-family: Arial, sans-serif;
       background: var(--bg);
       color: var(--text);
+      font-family: Arial;
+      margin: 0;
       display: flex;
       align-items: center;
       justify-content: center;
       height: 100vh;
-      margin: 0;
-      transition: background 0.4s;
+      overflow: hidden;
     }
+
+    .screen {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      height: 100%;
+    }
+    .active { display: flex; }
+
     .card {
       background: var(--card);
       padding: 25px;
@@ -45,16 +42,7 @@
       width: 330px;
       text-align: center;
       box-shadow: var(--glow);
-      transition: 0.4s;
-      animation: pop 0.5s ease;
     }
-
-    @keyframes pop {
-      0% { transform: scale(0.85); opacity: 0; }
-      100% { transform: scale(1); opacity: 1; }
-    }
-
-    h1 { margin-top: 0; font-size: 26px; }
 
     select, input {
       width: 100%;
@@ -62,13 +50,9 @@
       border-radius: 10px;
       border: none;
       margin: 8px 0;
-      font-size: 16px;
       background: #444;
       color: white;
-    }
-    body.light select, body.light input {
-      background: #eee;
-      color: black;
+      font-size: 16px;
     }
 
     .btn {
@@ -81,150 +65,124 @@
       font-size: 18px;
       cursor: pointer;
       margin-top: 10px;
-      transition: 0.3s;
-      box-shadow: var(--glow);
     }
-    .btn:hover { transform: scale(1.05); }
 
-    .result {
+    .numpad {
+      display: grid;
+      grid-template-columns: repeat(3, 70px);
+      gap: 10px;
+      justify-content: center;
       margin-top: 15px;
-      font-size: 18px;
-      min-height: 24px;
-      animation: fade 0.3s;
     }
-    @keyframes fade { from { opacity: 0; } to { opacity: 1; } }
-
-    .score-box {
-      background: #222;
-      padding: 10px;
-      border-radius: 12px;
-      margin-top: 15px;
-      font-size: 15px;
-    }
-
-    body.light .score-box { background: #e8e8e8; }
-    body.neon .score-box { background: #111; }
-
-    .timer {
+    .numpad button {
+      padding: 15px;
       font-size: 20px;
-      margin-top: 10px;
-      font-weight: bold;
+      border: none;
+      border-radius: 10px;
+      background: #555;
+      color: white;
+      cursor: pointer;
+    }
+
+    footer {
+      position: fixed;
+      bottom: 10px;
+      width: 100%;
+      text-align: center;
+      color: var(--text);
+      font-size: 14px;
+      opacity: 0.8;
     }
   </style>
 </head>
-<body class="dark">
-  <div class="card">
-    <h1>Guess The Number</h1>
+<body>
 
-    <label>Theme:</label>
-    <select id="theme">
-      <option value="dark">Dark</option>
-      <option value="light">Light</option>
-      <option value="neon">Neon</option>
-    </select>
+  <!-- START SCREEN -->
+  <div id="startScreen" class="screen active">
+    <div class="card">
+      <h1>Guess The Number</h1>
 
-    <label>Difficulty:</label>
-    <select id="difficulty">
-      <option value="50">Easy (1–50)</option>
-      <option value="100">Medium (1–100)</option>
-      <option value="500">Hard (1–500)</option>
-      <option value="1000">Insane (1–1000)</option>
-    </select>
+      <label>Difficulty:</label>
+      <select id="difficulty">
+        <option value="100">Easy (1–100)</option>
+        <option value="500">Medium (1–500)</option>
+        <option value="1000">Hard (1–1000)</option>
+      </select>
 
-    <label>Mode:</label>
-    <select id="mode">
-      <option value="normal">Normal</option>
-      <option value="speedrun">Speedrun</option>
-    </select>
-
-    <div class="timer" id="timer" style="display:none;">⏱ 0.00s</div>
-
-    <input type="number" id="guessInput" placeholder="Enter your guess" />
-    <button class="btn" onclick="makeGuess()">Guess</button>
-
-    <div class="result" id="result"></div>
-
-    <div class="score-box">
-      <div>High Score: <span id="highScore">0</span></div>
-      <div>Attempts: <span id="attempts">0</span></div>
+      <button class="btn" onclick="openGame()">Start Game</button>
     </div>
   </div>
+
+  <!-- GAME SCREEN -->
+  <div id="gameScreen" class="screen">
+    <div class="card">
+      <h2>Enter your guess:</h2>
+      <input type="text" id="guessInput" readonly>
+
+      <div class="numpad">
+        <button onclick="pressNum(1)">1</button>
+        <button onclick="pressNum(2)">2</button>
+        <button onclick="pressNum(3)">3</button>
+        <button onclick="pressNum(4)">4</button>
+        <button onclick="pressNum(5)">5</button>
+        <button onclick="pressNum(6)">6</button>
+        <button onclick="pressNum(7)">7</button>
+        <button onclick="pressNum(8)">8</button>
+        <button onclick="pressNum(9)">9</button>
+        <button onclick="clearNum()">C</button>
+        <button onclick="pressNum(0)">0</button>
+        <button onclick="makeGuess()">✓</button>
+      </div>
+
+      <div id="result" style="margin-top:15px; font-size:18px; min-height:24px;"></div>
+    </div>
+  </div>
+
+  <!-- WIN SCREEN -->
+  <div id="winScreen" class="screen">
+    <div class="card">
+      <h1>🎉 YOU WON! 🎉</h1>
+      <p id="winText"></p>
+      <button class="btn" onclick="restart()">Play Again</button>
+    </div>
+  </div>
+
+  <footer>
+    Made by <strong>Ronit Mantri</strong> •
+    <a href="https://github.com/ronitmantri" target="_blank" style="color:var(--accent); text-decoration:none;">GitHub Main</a> •
+    <a href="https://github.com/ronitmantri-alt" target="_blank" style="color:var(--accent); text-decoration:none;">GitHub Alt</a>
+  </footer>
 
   <script>
     let number = 0;
     let attempts = 0;
-    let startTime = 0;
-    let timerActive = false;
-    let timerInterval;
 
-    function startTimer() {
-      startTime = performance.now();
-      timerActive = true;
-      document.getElementById("timer").style.display = "block";
+    function openGame() {
+      document.getElementById("startScreen").classList.remove("active");
+      document.getElementById("gameScreen").classList.add("active");
 
-      timerInterval = setInterval(() => {
-        if (!timerActive) return;
-        const now = performance.now();
-        const sec = ((now - startTime) / 1000).toFixed(2);
-        document.getElementById("timer").textContent = `⏱ ${sec}s`;
-      }, 50);
-    }
-
-    function stopTimer() {
-      timerActive = false;
-      clearInterval(timerInterval);
-      return ((performance.now() - startTime) / 1000).toFixed(2);
-    }
-
-    function startGame() {
       const max = parseInt(document.getElementById("difficulty").value);
-      const mode = document.getElementById("mode").value;
-
       number = Math.floor(Math.random() * max) + 1;
       attempts = 0;
-
-      document.getElementById("attempts").textContent = attempts;
-      document.getElementById("result").textContent = "";
-      document.getElementById("guessInput").value = "";
-
-      if (mode === "speedrun") startTimer();
-      else {
-        document.getElementById("timer").style.display = "none";
-        stopTimer();
-      }
+      clearNum();
     }
 
-    document.getElementById("difficulty").addEventListener("change", () => {
-      loadHighScore();
-      startGame();
-    });
+    function pressNum(n) {
+      document.getElementById("guessInput").value += n;
+    }
 
-    document.getElementById("theme").addEventListener("change", () => {
-      document.body.className = document.getElementById("theme").value;
-    });
-
-    document.getElementById("mode").addEventListener("change", startGame);
+    function clearNum() {
+      document.getElementById("guessInput").value = "";
+    }
 
     function makeGuess() {
       const guess = parseInt(document.getElementById("guessInput").value);
       if (!guess) return;
 
       attempts++;
-      document.getElementById("attempts").textContent = attempts;
 
       if (guess === number) {
-        const mode = document.getElementById("mode").value;
-        let msg = "🎉 Correct! You cracked it!";
-
-        if (mode === "speedrun") {
-          const time = stopTimer();
-          msg += ` Finished in ${time}s!`;
-          updateSpeedrun(time);
-        }
-
-        document.getElementById("result").textContent = msg;
-        updateHighScore();
-        startGame();
+        showWin();
       } else if (guess > number) {
         document.getElementById("result").textContent = "Too high 📈";
       } else {
@@ -232,43 +190,16 @@
       }
     }
 
-    function updateHighScore() {
-      const difficulty = document.getElementById("difficulty").value;
-      const key = "highscore_" + difficulty;
-
-      const saved = localStorage.getItem(key);
-
-      if (!saved || attempts < saved) {
-        localStorage.setItem(key, attempts);
-      }
-
-      document.getElementById("highScore").textContent = localStorage.getItem(key) || 0;
+    function showWin() {
+      document.getElementById("gameScreen").classList.remove("active");
+      document.getElementById("winScreen").classList.add("active");
+      document.getElementById("winText").textContent = `You got it in ${attempts} attempts!`;
     }
 
-    function updateSpeedrun(time) {
-      const difficulty = document.getElementById("difficulty").value;
-      const key = "speedrun_" + difficulty;
-
-      const saved = localStorage.getItem(key);
-
-      if (!saved || parseFloat(time) < parseFloat(saved)) {
-        localStorage.setItem(key, time);
-      }
+    function restart() {
+      document.getElementById("winScreen").classList.remove("active");
+      document.getElementById("startScreen").classList.add("active");
     }
-
-    function loadHighScore() {
-      const difficulty = document.getElementById("difficulty").value;
-      const key = "highscore_" + difficulty;
-      document.getElementById("highScore").textContent = localStorage.getItem(key) || 0;
-    }
-
-    startGame();
-    loadHighScore();
   </script>
-  <footer style="position:fixed; bottom:10px; width:100%; text-align:center; color:var(--text); font-size:14px; opacity:0.8;">
-    Made by <strong>Ronit Mantri</strong> • 
-    <a href="https://github.com/ronitmantri" target="_blank" style="color:var(--accent); text-decoration:none;">GitHub Main</a> • 
-    <a href="https://github.com/ronitmantri-alt" target="_blank" style="color:var(--accent); text-decoration:none;">GitHub Alt</a>
-  </footer>
 </body>
 </html>
