@@ -1,205 +1,211 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Guess The Number</title>
-  <style>
-    :root {
-      --bg: #1a1a1a;
-      --card: #2c2c2c;
-      --text: white;
-      --accent: #4caf50;
-      --glow: 0 0 15px rgba(76, 175, 80, 0.5);
+<meta charset="UTF-8">
+<title>Guess Master</title>
+<style>
+    body {
+        margin: 0;
+        font-family: Arial, sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        transition: 0.3s;
     }
 
-    body {
-      background: var(--bg);
-      color: var(--text);
-      font-family: Arial;
-      margin: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      height: 100vh;
-      overflow: hidden;
+    :root {
+        --bg: #111;
+        --text: #fff;
+        --card: #222;
+        --accent: #00d4ff;
+    }
+
+    .theme-light {
+        --bg: #f2f2f2;
+        --text: #111;
+        --card: white;
+        --accent: #0077ff;
+    }
+
+    .theme-neon {
+        --bg: #000000;
+        --text: #39ff14;
+        --card: #111;
+        --accent: #ff00c8;
     }
 
     .screen {
-      display: none;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      width: 100%;
-      height: 100%;
+        display: none;
+        padding: 20px;
+        animation: fade 0.4s ease;
     }
-    .active { display: flex; }
+    @keyframes fade { from { opacity: 0; } to { opacity: 1; } }
+
+    .active { display: block; }
 
     .card {
-      background: var(--card);
-      padding: 25px;
-      border-radius: 20px;
-      width: 330px;
-      text-align: center;
-      box-shadow: var(--glow);
+        background: var(--card);
+        padding: 20px;
+        border-radius: 14px;
+        max-width: 400px;
+        margin: auto;
+        box-shadow: 0 0 12px #0004;
     }
 
-    select, input {
-      width: 100%;
-      padding: 10px;
-      border-radius: 10px;
-      border: none;
-      margin: 8px 0;
-      background: #444;
-      color: white;
-      font-size: 16px;
+    button {
+        background: var(--accent);
+        border: none;
+        padding: 14px 20px;
+        border-radius: 10px;
+        cursor: pointer;
+        width: 100%;
+        font-size: 18px;
+        margin-top: 10px;
+        color: black;
+        font-weight: bold;
+        transition: 0.2s;
     }
+    button:hover { transform: scale(1.05); }
 
-    .btn {
-      width: 100%;
-      padding: 12px;
-      border: none;
-      border-radius: 10px;
-      background: var(--accent);
-      color: white;
-      font-size: 18px;
-      cursor: pointer;
-      margin-top: 10px;
+    footer {
+        position: fixed;
+        bottom: 0;
+        width: 100%;
+        text-align: center;
+        padding: 8px;
+        background: #0004;
     }
 
     .numpad {
-      display: grid;
-      grid-template-columns: repeat(3, 70px);
-      gap: 10px;
-      justify-content: center;
-      margin-top: 15px;
-    }
-    .numpad button {
-      padding: 15px;
-      font-size: 20px;
-      border: none;
-      border-radius: 10px;
-      background: #555;
-      color: white;
-      cursor: pointer;
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 10px;
+        margin-top: 15px;
     }
 
-    footer {
-      position: fixed;
-      bottom: 10px;
-      width: 100%;
-      text-align: center;
-      color: var(--text);
-      font-size: 14px;
-      opacity: 0.8;
+    .numpad button {
+        padding: 20px;
+        font-size: 20px;
+        border-radius: 14px;
     }
-  </style>
+
+</style>
 </head>
 <body>
 
-  <!-- START SCREEN -->
-  <div id="startScreen" class="screen active">
+<!-- MAIN MENU -->
+<div id="menu" class="screen active">
     <div class="card">
-      <h1>Guess The Number</h1>
+        <h2>🎮 Guess Master</h2>
 
-      <label>Difficulty:</label>
-      <select id="difficulty">
-        <option value="100">Easy (1–100)</option>
-        <option value="500">Medium (1–500)</option>
-        <option value="1000">Hard (1–1000)</option>
-      </select>
+        <label>Difficulty (1–100):</label>
+        <input id="difficulty" type="number" min="1" max="100" value="50" style="width:100%;padding:10px;border-radius:10px;margin-top:10px;">
 
-      <button class="btn" onclick="openGame()">Start Game</button>
+        <label style="display:block;margin-top:15px;">Theme:</label>
+        <select id="theme" style="width:100%;padding:10px;border-radius:10px;">
+            <option value="dark">Dark</option>
+            <option value="light">Light</option>
+            <option value="neon">Neon</option>
+        </select>
+
+        <button onclick="startGame()">Start Game</button>
     </div>
-  </div>
+</div>
 
-  <!-- GAME SCREEN -->
-  <div id="gameScreen" class="screen">
+<!-- GAME SCREEN -->
+<div id="game" class="screen">
     <div class="card">
-      <h2>Enter your guess:</h2>
-      <input type="text" id="guessInput" readonly>
+        <h2>🔢 Make Your Guess</h2>
+        <p id="hint">Enter a number:</p>
 
-      <div class="numpad">
-        <button onclick="pressNum(1)">1</button>
-        <button onclick="pressNum(2)">2</button>
-        <button onclick="pressNum(3)">3</button>
-        <button onclick="pressNum(4)">4</button>
-        <button onclick="pressNum(5)">5</button>
-        <button onclick="pressNum(6)">6</button>
-        <button onclick="pressNum(7)">7</button>
-        <button onclick="pressNum(8)">8</button>
-        <button onclick="pressNum(9)">9</button>
-        <button onclick="clearNum()">C</button>
-        <button onclick="pressNum(0)">0</button>
-        <button onclick="makeGuess()">✓</button>
-      </div>
+        <input id="guess" type="text" readonly style="width:100%;padding:12px;border-radius:10px;font-size:20px;text-align:center;">
 
-      <div id="result" style="margin-top:15px; font-size:18px; min-height:24px;"></div>
+        <div class="numpad">
+            <button onclick="addNum('1')">1</button>
+            <button onclick="addNum('2')">2</button>
+            <button onclick="addNum('3')">3</button>
+            <button onclick="addNum('4')">4</button>
+            <button onclick="addNum('5')">5</button>
+            <button onclick="addNum('6')">6</button>
+            <button onclick="addNum('7')">7</button>
+            <button onclick="addNum('8')">8</button>
+            <button onclick="addNum('9')">9</button>
+            <button onclick="clearNum()">⌫</button>
+            <button onclick="addNum('0')">0</button>
+            <button onclick="submitGuess()">OK</button>
+        </div>
     </div>
-  </div>
+</div>
 
-  <!-- WIN SCREEN -->
-  <div id="winScreen" class="screen">
+<!-- WIN SCREEN -->
+<div id="win" class="screen">
     <div class="card">
-      <h1>🎉 YOU WON! 🎉</h1>
-      <p id="winText"></p>
-      <button class="btn" onclick="restart()">Play Again</button>
+        <h2>🎉 You Won!</h2>
+        <p id="stats"></p>
+        <button onclick="returnMenu()">Return to Main Menu</button>
     </div>
-  </div>
+</div>
 
-  <footer>
-    Made by <strong>Ronit Mantri</strong> •
-    <a href="https://github.com/ronitmantri" target="_blank" style="color:var(--accent); text-decoration:none;">GitHub Main</a> •
-    <a href="https://github.com/ronitmantri-alt" target="_blank" style="color:var(--accent); text-decoration:none;">GitHub Alt</a>
-  </footer>
+<footer>Made with 🔥 by Ronit</footer>
 
-  <script>
-    let number = 0;
-    let attempts = 0;
+<script>
+let secret = 0;
+let attempts = 0;
+let max = 50;
 
-    function openGame() {
-      document.getElementById("startScreen").classList.remove("active");
-      document.getElementById("gameScreen").classList.add("active");
+function switchScreen(id) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+}
 
-      const max = parseInt(document.getElementById("difficulty").value);
-      number = Math.floor(Math.random() * max) + 1;
-      attempts = 0;
-      clearNum();
+function startGame() {
+    max = parseInt(document.getElementById("difficulty").value);
+    if (max < 1 || max > 100) { alert("Difficulty must be 1–100"); return; }
+
+    attempts = 0;
+    secret = Math.floor(Math.random() * max) + 1;
+
+    document.documentElement.className =
+        document.getElementById("theme").value === "light" ? "theme-light" :
+        document.getElementById("theme").value === "neon" ? "theme-neon" : "";
+
+    document.getElementById("guess").value = "";
+    document.getElementById("hint").innerText = "Enter a number:";
+    switchScreen("game");
+}
+
+function addNum(n) {
+    let g = document.getElementById("guess");
+    if (g.value.length < 3) g.value += n;
+}
+
+function clearNum() {
+    let g = document.getElementById("guess");
+    g.value = g.value.slice(0, -1);
+}
+
+function submitGuess() {
+    let val = parseInt(document.getElementById("guess").value);
+    if (isNaN(val)) return;
+
+    attempts++;
+
+    if (val === secret) {
+        document.getElementById("stats").innerText =
+            `Correct number: ${secret}\nAttempts: ${attempts}`;
+        switchScreen("win");
+    } else if (val < secret) {
+        document.getElementById("hint").innerText = "📈 Higher!";
+    } else {
+        document.getElementById("hint").innerText = "📉 Lower!";
     }
 
-    function pressNum(n) {
-      document.getElementById("guessInput").value += n;
-    }
+    document.getElementById("guess").value = "";
+}
 
-    function clearNum() {
-      document.getElementById("guessInput").value = "";
-    }
+function returnMenu() {
+    switchScreen("menu");
+}
+</script>
 
-    function makeGuess() {
-      const guess = parseInt(document.getElementById("guessInput").value);
-      if (!guess) return;
-
-      attempts++;
-
-      if (guess === number) {
-        showWin();
-      } else if (guess > number) {
-        document.getElementById("result").textContent = "Too high 📈";
-      } else {
-        document.getElementById("result").textContent = "Too low 📉";
-      }
-    }
-
-    function showWin() {
-      document.getElementById("gameScreen").classList.remove("active");
-      document.getElementById("winScreen").classList.add("active");
-      document.getElementById("winText").textContent = `You got it in ${attempts} attempts!`;
-    }
-
-    function restart() {
-      document.getElementById("winScreen").classList.remove("active");
-      document.getElementById("startScreen").classList.add("active");
-    }
-  </script>
 </body>
 </html>
